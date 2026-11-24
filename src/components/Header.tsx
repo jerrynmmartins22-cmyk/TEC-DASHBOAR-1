@@ -8,9 +8,17 @@ export const Header = () => {
 
   useEffect(() => {
     checkDbStatus();
-    const interval = setInterval(checkDbStatus, 30000); // Check every 30s
-    return () => clearInterval(interval);
   }, [checkDbStatus]);
+
+  useEffect(() => {
+    if (dbStatus !== 'disconnected') return;
+    const interval = setInterval(() => {
+      if (!document.hidden && navigator.onLine) {
+        checkDbStatus();
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [dbStatus, checkDbStatus]);
 
   return (
     <header className="glass-card border-b border-border/50 px-6 py-4">

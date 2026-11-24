@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { createHash } from 'crypto';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 import * as schema from './db/schema.js';
@@ -40,24 +41,48 @@ app.get('/health', async (req, res) => {
     }
 });
 
-// GET All Data (Initial Load)
+// GET All Data (Initial Load & Polling)
+const DEFAULT_SCHEDULES_LIMIT = 60;
+
 app.get('/api/state', async (req, res) => {
     try {
-        const allTechnicians = await db.query.technicians.findMany();
-        const allServiceTypes = await db.query.serviceTypes.findMany();
-        const allSchedules = await db.query.schedules.findMany({
-            with: {
-                boxes: {
-                    with: {
-                        services: true,
-                    },
-                    orderBy: asc(schema.boxes.number)
-                }
-            },
-            orderBy: desc(schema.schedules.date) // Newest first
+        const limitParam = req.query.limit ? parseInt(String(req.query.limit), 10) : DEFAULT_SCHEDULES_LIMIT;
+        const schedulesLimit = Number.isFinite(limitParam) && limitParam > 0
+            ? Math.min(limitParam, MAX_SCHEDULES)
+            : DEFAULT_SCHEDULES_LIMIT;
+
+        const [allTechnicians, allServiceTypes, recentSchedules] = await Promise.all([
+            db.query.technicians.findMany(),
+            db.query.serviceTypes.findMany(),
+            db.query.schedules.findMany({
+                with: {
+                    boxes: {
+                        with: {
+                            services: true,
+                        },
+                        orderBy: asc(schema.boxes.number)
+                    }
+                },
+                orderBy: desc(schema.schedules.date), // Newest first
+                limit: schedulesLimit
+            })
+        ]);
+
+        const payload = JSON.stringify({
+            technicians: allTechnicians,
+            schedules: recentSchedules,
+            serviceTypes: allServiceTypes
         });
 
-        res.json({ technicians: allTechnicians, schedules: allSchedules, serviceTypes: allServiceTypes });
+        const etag = `"${createHash('sha1').update(payload).digest('hex')}"`;
+        res.setHeader('ETag', etag);
+        res.setHeader('Cache-Control', 'no-cache');
+
+        if (req.headers['if-none-match'] === etag) {
+            return res.status(304).end();
+        }
+
+        res.type('application/json').send(payload);
     } catch (error) {
         console.error('Error fetching state:', error);
         res.status(500).json({ error: 'Failed to fetch state' });

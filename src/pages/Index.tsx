@@ -27,11 +27,28 @@ const Index = () => {
   }, [mode]);
 
   useEffect(() => {
-    fetchState();
-    const interval = setInterval(() => {
-      fetchState();
-    }, 5000);
-    return () => clearInterval(interval);
+    const POLL_INTERVAL_MS = 15000;
+
+    const pollIfVisible = () => {
+      if (!document.hidden && navigator.onLine) {
+        fetchState();
+      }
+    };
+
+    pollIfVisible();
+    const interval = setInterval(pollIfVisible, POLL_INTERVAL_MS);
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        pollIfVisible();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [fetchState]);
 
   return (

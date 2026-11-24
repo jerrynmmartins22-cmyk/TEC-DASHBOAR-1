@@ -56,6 +56,9 @@ interface AppState {
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
+let lastStateEtag: string | null = null;
+let isFetchingState = false;
+
 export const useAppStore = create<AppState>()(
   (set, get) => ({
     technicians: [],
@@ -79,8 +82,26 @@ export const useAppStore = create<AppState>()(
 
     // Initial Load & Polling
     fetchState: async () => {
+      if (isFetchingState) return;
+      isFetchingState = true;
       try {
-        const res = await fetch('/api/state');
+        const headers: HeadersInit = {};
+        if (lastStateEtag) {
+          headers['If-None-Match'] = lastStateEtag;
+        }
+
+        const res = await fetch('/api/state', { headers });
+
+        if (res.status === 304) {
+          set((state) => (state.dbStatus === 'connected' ? state : { dbStatus: 'connected' }));
+          return;
+        }
+
+        const etag = res.headers.get('etag');
+        if (etag) {
+          lastStateEtag = etag;
+        }
+
         const data = await res.json();
 
         if (data.error) {
@@ -115,6 +136,8 @@ export const useAppStore = create<AppState>()(
       } catch (err) {
         console.error('Failed to fetch state', err);
         set({ dbStatus: 'disconnected' });
+      } finally {
+        isFetchingState = false;
       }
     },
 
