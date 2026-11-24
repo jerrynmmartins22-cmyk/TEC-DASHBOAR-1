@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ServiceBoxProps {
   box: ServiceBoxType;
@@ -30,7 +31,7 @@ interface ServiceBoxProps {
 export const ServiceBoxCard = ({ box, scheduleId }: ServiceBoxProps) => {
   const [osNumber, setOsNumber] = useState('');
   // Use first category as default if available, or empty string
-  const { serviceTypes, addService, removeService, updateBoxStatus, removeBox, moveService, updateServiceType, updateBoxNumber, updateBoxAlert, updateBoxCity } = useAppStore();
+  const { serviceTypes, addService, removeService, updateBoxStatus, removeBox, moveService, updateServiceType, updateBoxNumber, updateBoxAlert, updateBoxCity, currentSchedule } = useAppStore();
   const [serviceType, setServiceType] = useState<ServiceType>(serviceTypes[0]?.name || '');
 
   const [status, setStatus] = useState(box.status || '');
@@ -62,9 +63,16 @@ export const ServiceBoxCard = ({ box, scheduleId }: ServiceBoxProps) => {
   const handleAddService = () => {
     // If no type selected but types exist, try to pick first
     const typeToAdd = serviceType || serviceTypes[0]?.name || 'N/A';
+    const trimmedOS = osNumber.trim();
 
-    if (osNumber.trim()) {
-      addService(scheduleId, box.id, { osNumber: osNumber.trim(), type: typeToAdd });
+    if (trimmedOS) {
+      const duplicateBox = currentSchedule?.boxes.find((b) =>
+        b.services.some((s) => s.osNumber.trim() === trimmedOS)
+      );
+      if (duplicateBox) {
+        toast.warning(`Atenção: a O.S. ${trimmedOS} já existe na Caixa ${String(duplicateBox.number).padStart(2, '0')}.`);
+      }
+      addService(scheduleId, box.id, { osNumber: trimmedOS, type: typeToAdd });
       setOsNumber('');
     }
   };

@@ -18,9 +18,9 @@ export const ServiceTypeManager = () => {
     };
 
     return (
-        <Card className="glass-card w-full border-accent/20">
+        <Card className="glass-card w-full border-sky-400/20">
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-cyan-300">
                     <Tags className="w-4 h-4" />
                     Categorias O.S
                 </CardTitle>
@@ -32,25 +32,26 @@ export const ServiceTypeManager = () => {
                         value={newType}
                         onChange={(e) => setNewType(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-                        className="h-8 text-xs"
+                        className="h-8 text-xs bg-slate-950/50 border-sky-400/20 focus:border-cyan-400/60"
                     />
-                    <Button onClick={handleAdd} size="icon" className="h-8 w-8 shrink-0 bg-primary hover:bg-primary/90">
+                    <Button onClick={handleAdd} size="icon" className="h-8 w-8 shrink-0 noc-cta rounded-lg">
                         <Plus className="w-4 h-4" />
                     </Button>
                 </div>
 
-                <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
+                <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1">
                     {serviceTypes.map((type) => (
                         <div
                             key={type.id}
-                            className="flex items-center justify-between p-2 rounded bg-secondary/30 hover:bg-secondary/50 group transition-colors"
+                            className="flex items-center justify-between p-2 rounded-lg bg-slate-950/45 border border-sky-400/10 hover:border-cyan-400/30 hover:bg-slate-900/60 group transition-colors"
                         >
-                            <span className="text-xs font-medium">{type.name}</span>
+                            <span className="text-xs font-medium text-sky-100">{type.name}</span>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeServiceType(type.id)}
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:text-destructive"
+                                title="Remover categoria"
+                                className="h-6 w-6 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
                             >
                                 <Trash2 className="w-3 h-3" />
                             </Button>

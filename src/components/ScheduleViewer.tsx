@@ -1,6 +1,6 @@
 import { useAppStore } from '@/lib/store';
 import { ViewModeBox } from './ViewModeBox';
-import { FileText, Copy, Check, Sun, Moon, Search, X, CalendarDays } from 'lucide-react';
+import { FileText, Copy, Check, Sun, Moon, Search, X, CalendarDays, ArrowUpDown } from 'lucide-react';
 
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -38,10 +38,11 @@ const formatStatusText = (status?: string, completedAt?: string): string => {
 type StatusFilter = 'todas' | ServiceStatus;
 
 export const ScheduleViewer = () => {
-  const { currentSchedule, schedules, setCurrentSchedule } = useAppStore();
+  const { currentSchedule, schedules, setCurrentSchedule, hasLoaded } = useAppStore();
   const [copied, setCopied] = useState(false);
   const [searchOS, setSearchOS] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas');
+  const [sortBy, setSortBy] = useState<'number' | 'pending'>('number');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -98,6 +99,18 @@ export const ScheduleViewer = () => {
   };
 
   if (!currentSchedule) {
+    if (!hasLoaded) {
+      return (
+        <div className="flex-1 p-4 space-y-4 overflow-hidden">
+          <div className="h-16 rounded-xl glass-card animate-pulse" />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-56 rounded-xl glass-card animate-pulse" />
+            ))}
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
@@ -210,11 +223,30 @@ export const ScheduleViewer = () => {
     ? Math.round((stats.concluido / stats.totalServices) * 100)
     : 0;
 
-  const visibleBoxes = statusFilter === 'todas'
-    ? currentSchedule.boxes
-    : currentSchedule.boxes.filter((box) =>
-        box.services.some((s) => (s.status || 'pendente') === statusFilter)
-      );
+  const lowerSearch = trimmedSearch.toLowerCase();
+
+  const visibleBoxes = [...currentSchedule.boxes]
+    .filter((box) => {
+      const matchesStatus =
+        statusFilter === 'todas' ||
+        box.services.some((s) => (s.status || 'pendente') === statusFilter);
+
+      if (!matchesStatus) return false;
+      if (!lowerSearch) return true;
+
+      const matchesOS = box.services.some((s) => s.osNumber.toLowerCase().includes(lowerSearch));
+      const matchesCity = !!box.city && box.city.toLowerCase().includes(lowerSearch);
+      const matchesTeam = !!box.team?.members.some((m) => m.name.toLowerCase().includes(lowerSearch));
+      return matchesOS || matchesCity || matchesTeam;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'pending') {
+        const aPending = a.services.filter((s) => !s.status || s.status === 'pendente').length;
+        const bPending = b.services.filter((s) => !s.status || s.status === 'pendente').length;
+        if (bPending !== aPending) return bPending - aPending;
+      }
+      return a.number - b.number;
+    });
 
   const filterChips: { key: StatusFilter; label: string; count: number; activeClass: string }[] = [
     { key: 'todas', label: 'Todas', count: stats.totalServices, activeClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-semibold border-cyan-300/50 shadow-[0_0_12px_rgba(6,182,212,0.35)]' },
@@ -253,16 +285,15 @@ export const ScheduleViewer = () => {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:flex-none sm:w-56 min-w-[160px]">
+          <div className="relative flex-1 sm:flex-none sm:w-64 min-w-[180px]">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-300/70 pointer-events-none" />
             <Input
               ref={searchInputRef}
               type="text"
-              inputMode="numeric"
               value={searchOS}
               onChange={(e) => setSearchOS(e.target.value)}
-              placeholder="Buscar OS... (/)"
-              className="pl-8 pr-8 h-9 bg-slate-950/60 border-sky-400/20 focus:border-cyan-400/60 font-mono text-sm"
+              placeholder="Buscar OS, técnico ou cidade (/)"
+              className="pl-8 pr-8 h-9 bg-slate-950/60 border-sky-400/20 focus:border-cyan-400/60 text-sm"
             />
             {searchOS && (
               <button
@@ -309,6 +340,14 @@ export const ScheduleViewer = () => {
             })}
           </div>
           <div className="flex items-center gap-2 text-xs text-sky-200/70">
+            <button
+              onClick={() => setSortBy((prev) => (prev === 'number' ? 'pending' : 'number'))}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-950/50 border border-sky-400/20 hover:border-cyan-400/40 text-sky-200 transition-colors"
+              title="Alternar ordenação das caixas"
+            >
+              <ArrowUpDown className="w-3 h-3 text-cyan-300" />
+              <span>{sortBy === 'number' ? 'Ordem: Caixa' : 'Ordem: Pendências'}</span>
+            </button>
             <span className="font-mono">{stats.totalBoxes} caixa(s)</span>
             <span>•</span>
             <span className="font-mono font-semibold text-cyan-300">{progressPct}% concluído</span>

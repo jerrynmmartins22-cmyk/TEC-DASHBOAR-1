@@ -9,10 +9,22 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const ScheduleEditor = () => {
-  const { currentSchedule, addBox } = useAppStore();
+  const { currentSchedule, addBox, hasLoaded } = useAppStore();
   const [copied, setCopied] = useState(false);
 
   if (!currentSchedule) {
+    if (!hasLoaded) {
+      return (
+        <div className="flex-1 p-4 space-y-4 overflow-hidden">
+          <div className="h-16 rounded-xl glass-card animate-pulse" />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-56 rounded-xl glass-card animate-pulse" />
+            ))}
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">

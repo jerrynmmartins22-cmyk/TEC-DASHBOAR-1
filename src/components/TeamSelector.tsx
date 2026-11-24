@@ -3,7 +3,8 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Users, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Users, Check, Search } from 'lucide-react';
 import { Technician, Team } from '@/types';
 
 interface TeamSelectorProps {
@@ -18,10 +19,17 @@ export const TeamSelector = ({ scheduleId, boxId, currentTeam }: TeamSelectorPro
     currentTeam?.members.map(m => m.id) || []
   );
   const [open, setOpen] = useState(false);
+  const [techSearch, setTechSearch] = useState('');
 
   useEffect(() => {
     setSelectedIds(currentTeam?.members.map(m => m.id) || []);
   }, [currentTeam]);
+
+  const filteredTechnicians = useMemo(() => {
+    const q = techSearch.trim().toLowerCase();
+    if (!q) return technicians;
+    return technicians.filter((t) => t.name.toLowerCase().includes(q));
+  }, [technicians, techSearch]);
 
   const unavailableids = useMemo(() => {
     const schedule = schedules.find(s => s.id === scheduleId);
@@ -78,34 +86,43 @@ export const TeamSelector = ({ scheduleId, boxId, currentTeam }: TeamSelectorPro
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTechSearch(''); }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="justify-start gap-2 bg-secondary/50 border-border/50 hover:bg-secondary text-left truncate max-w-full"
+          className="justify-start gap-2 bg-slate-950/50 border-sky-400/20 hover:bg-cyan-400/10 hover:border-cyan-400/40 text-left truncate max-w-full"
         >
-          <Users className="w-4 h-4 text-primary shrink-0" />
+          <Users className="w-4 h-4 text-cyan-300 shrink-0" />
           <span className="truncate">{getTeamLabel()}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 bg-card border-border">
+      <PopoverContent className="w-64 bg-[#070f24]/95 backdrop-blur-xl border-sky-400/25">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-foreground mb-3">
+          <p className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">
             Selecionar até 5 técnicos
           </p>
-          <div className="space-y-1 max-h-48 overflow-y-auto">
-            {technicians.map((tech) => {
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder="Buscar técnico..."
+              value={techSearch}
+              onChange={(e) => setTechSearch(e.target.value)}
+              className="h-8 pl-8 text-xs bg-slate-950/60 border-sky-400/20"
+            />
+          </div>
+          <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+            {filteredTechnicians.map((tech) => {
               const isUnavailable = unavailableids.includes(tech.id);
               const isSelected = selectedIds.includes(tech.id);
 
               return (
                 <label
                   key={tech.id}
-                  className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${isSelected
-                      ? 'bg-primary/20'
+                  className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${isSelected
+                      ? 'bg-cyan-500/20 border border-cyan-400/30'
                       : isUnavailable
-                        ? 'opacity-50 cursor-not-allowed bg-secondary/30'
-                        : 'hover:bg-secondary/50'
+                        ? 'opacity-50 cursor-not-allowed bg-slate-950/30'
+                        : 'hover:bg-slate-900/70'
                     }`}
                 >
                   <Checkbox
@@ -122,8 +139,13 @@ export const TeamSelector = ({ scheduleId, boxId, currentTeam }: TeamSelectorPro
                 </label>
               );
             })}
+            {filteredTechnicians.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                Nenhum técnico encontrado
+              </p>
+            )}
           </div>
-          <Button onClick={handleConfirm} className="w-full mt-3" size="sm">
+          <Button onClick={handleConfirm} className="w-full mt-3 noc-cta rounded-lg" size="sm">
             <Check className="w-4 h-4 mr-2" />
             Confirmar
           </Button>

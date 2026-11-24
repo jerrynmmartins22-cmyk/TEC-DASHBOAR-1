@@ -1,10 +1,11 @@
-import { Radio, Calendar, Database } from 'lucide-react';
+import { Radio, Calendar, Database, RefreshCw } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
+import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { useEffect } from 'react';
 
 export const Header = () => {
-  const { dbStatus, checkDbStatus } = useAppStore();
+  const { dbStatus, checkDbStatus, fetchState, isSyncing, lastSyncedAt } = useAppStore();
 
   useEffect(() => {
     checkDbStatus();
@@ -42,7 +43,7 @@ export const Header = () => {
         <div className="flex items-center gap-2 sm:gap-3 ml-auto">
           <div
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/60 border border-sky-400/20"
-            title={`Banco de Dados: ${dbStatus === 'connected' ? 'Conectado' : dbStatus === 'checking' ? 'Verificando' : 'Desconectado'}`}
+            title={`Banco de Dados: ${dbStatus === 'connected' ? 'Conectado' : dbStatus === 'checking' ? 'Verificando' : 'Desconectado'}${lastSyncedAt ? ` • Última sincronização: ${lastSyncedAt}` : ''}`}
           >
             <div className={`relative flex items-center justify-center w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]'}`}>
               {dbStatus !== 'connected' && (
@@ -53,7 +54,23 @@ export const Header = () => {
             <span className={`hidden sm:inline text-xs font-medium ${dbStatus === 'connected' ? 'text-emerald-300' : 'text-red-400'}`}>
               {dbStatus === 'checking' ? 'Verificando...' : dbStatus === 'connected' ? 'Supabase' : 'Offline'}
             </span>
+            {lastSyncedAt && (
+              <span className="hidden lg:inline text-[10px] font-mono text-sky-200/50 border-l border-sky-400/20 pl-2">
+                {lastSyncedAt}
+              </span>
+            )}
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => fetchState()}
+            disabled={isSyncing}
+            title="Sincronizar agora"
+            aria-label="Sincronizar dados"
+            className="h-8 w-8 rounded-full bg-slate-950/60 border border-sky-400/20 text-cyan-300 hover:bg-cyan-400/15 hover:text-cyan-200"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+          </Button>
           <ModeToggle />
         </div>
       </div>

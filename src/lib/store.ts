@@ -10,6 +10,9 @@ interface AppState {
   currentSchedule: Schedule | null;
   mode: AppMode;
   dbStatus: 'connected' | 'disconnected' | 'checking';
+  hasLoaded: boolean;
+  isSyncing: boolean;
+  lastSyncedAt: string | null;
 
   // Mode
   setMode: (mode: AppMode) => void;
@@ -67,6 +70,9 @@ export const useAppStore = create<AppState>()(
     currentSchedule: null,
     mode: 'view',
     dbStatus: 'checking',
+    hasLoaded: false,
+    isSyncing: false,
+    lastSyncedAt: null,
 
     setMode: (mode) => set({ mode }),
 
@@ -84,6 +90,7 @@ export const useAppStore = create<AppState>()(
     fetchState: async () => {
       if (isFetchingState) return;
       isFetchingState = true;
+      set({ isSyncing: true });
       try {
         const headers: HeadersInit = {};
         if (lastStateEtag) {
@@ -91,9 +98,10 @@ export const useAppStore = create<AppState>()(
         }
 
         const res = await fetch('/api/state', { headers });
+        const syncTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         if (res.status === 304) {
-          set((state) => (state.dbStatus === 'connected' ? state : { dbStatus: 'connected' }));
+          set({ dbStatus: 'connected', hasLoaded: true, lastSyncedAt: syncTime });
           return;
         }
 
@@ -106,7 +114,7 @@ export const useAppStore = create<AppState>()(
 
         if (data.error) {
           console.error('API Error:', data.error);
-          set({ dbStatus: 'disconnected' });
+          set({ dbStatus: 'disconnected', hasLoaded: true });
           return;
         }
 
@@ -130,14 +138,17 @@ export const useAppStore = create<AppState>()(
             serviceTypes: data.serviceTypes || state.serviceTypes,
             schedules: newSchedules,
             currentSchedule: updatedCurrentSchedule,
-            dbStatus: 'connected'
+            dbStatus: 'connected',
+            hasLoaded: true,
+            lastSyncedAt: syncTime,
           };
         });
       } catch (err) {
         console.error('Failed to fetch state', err);
-        set({ dbStatus: 'disconnected' });
+        set({ dbStatus: 'disconnected', hasLoaded: true });
       } finally {
         isFetchingState = false;
+        set({ isSyncing: false });
       }
     },
 

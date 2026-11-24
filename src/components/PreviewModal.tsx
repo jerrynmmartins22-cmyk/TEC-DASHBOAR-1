@@ -26,21 +26,22 @@ export const PreviewModal = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-secondary/50 border-border/50">
-          <Eye className="w-4 h-4 mr-2" />
-          Preview
+        <Button variant="outline" className="w-full bg-slate-950/50 border-sky-400/25 text-cyan-200 hover:bg-cyan-400/15 hover:border-cyan-400/50 hover:text-white">
+          <Eye className="w-4 h-4 mr-2 text-cyan-300" />
+          Preview da Agenda
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-card border-border">
+      <DialogContent className="max-w-2xl bg-[#070f24]/95 backdrop-blur-xl border-sky-400/25">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Preview da Agenda</span>
-            <Button onClick={handleCopy} size="sm" variant="outline">
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          <DialogTitle className="flex items-center justify-between pr-6">
+            <span className="text-foreground">Preview da Agenda</span>
+            <Button onClick={handleCopy} size="sm" className="noc-cta rounded-lg">
+              {copied ? <Check className="w-4 h-4 mr-1.5" /> : <Copy className="w-4 h-4 mr-1.5" />}
+              {copied ? 'Copiado' : 'Copiar'}
             </Button>
           </DialogTitle>
         </DialogHeader>
-        <pre className="bg-background p-4 rounded-lg font-mono text-sm whitespace-pre-wrap text-foreground overflow-auto max-h-96">
+        <pre className="bg-slate-950/75 border border-sky-400/15 p-4 rounded-xl font-mono text-sm whitespace-pre-wrap text-sky-100 overflow-auto max-h-96">
           {previewText}
         </pre>
       </DialogContent>
