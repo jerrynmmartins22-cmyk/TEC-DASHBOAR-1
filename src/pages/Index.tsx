@@ -124,7 +124,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -132,7 +132,7 @@ const Index = () => {
         {!isMobile && (
           <aside
             className={cn(
-              "border-r border-sky-400/15 bg-[#070f24]/80 backdrop-blur-xl overflow-y-auto transition-all duration-300 ease-in-out relative shrink-0",
+              "border-r border-sky-400/20 bg-[#070f24]/45 backdrop-blur-[6px] overflow-y-auto transition-all duration-300 ease-in-out relative shrink-0",
               isSidebarOpen ? "w-80 p-4 opacity-100" : "w-0 p-0 opacity-0 border-none overflow-hidden"
             )}
           >

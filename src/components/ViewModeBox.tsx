@@ -328,7 +328,7 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                 'p-3 rounded-xl space-y-2 cursor-move group transition-all border',
                 isHighlighted
                   ? 'animate-blink-blue border-cyan-400'
-                  : 'bg-[#081229]/85 border-sky-400/15 hover:border-cyan-400/35 hover:bg-[#0b1836]/90'
+                  : 'bg-[#081229]/55 border-sky-400/15 hover:border-cyan-400/40 hover:bg-[#0b1836]/65'
               )}
             >
               <div className="flex items-center justify-between gap-2">

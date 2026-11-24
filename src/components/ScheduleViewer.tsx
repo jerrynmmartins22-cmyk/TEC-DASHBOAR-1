@@ -226,7 +226,7 @@ export const ScheduleViewer = () => {
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-sky-400/15 bg-[#081228]/70 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-sky-400/15 bg-[#081228]/45 backdrop-blur-[6px]">
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/25 text-cyan-300 shrink-0">
             <CalendarDays className="w-5 h-5" />
@@ -286,7 +286,7 @@ export const ScheduleViewer = () => {
       </div>
 
       {/* KPI & Status Filter Bar */}
-      <div className="px-4 py-2.5 border-b border-sky-400/15 bg-[#071022]/60 space-y-2">
+      <div className="px-4 py-2.5 border-b border-sky-400/15 bg-[#071022]/35 backdrop-blur-[4px] space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
             {filterChips.map((chip) => {

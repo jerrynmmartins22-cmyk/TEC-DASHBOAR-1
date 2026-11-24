@@ -44,7 +44,7 @@ export const ScheduleEditor = () => {
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border/50 bg-card/50">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-sky-400/15 bg-[#081228]/45 backdrop-blur-[6px]">
         <div>
           <h2 className="text-base sm:text-lg font-bold text-foreground capitalize">
             {dateFormatted}
