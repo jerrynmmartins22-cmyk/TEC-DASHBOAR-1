@@ -141,14 +141,14 @@ export const ScheduleSelector = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleCreate} className="w-full">
+        <Button onClick={handleCreate} className="w-full noc-cta rounded-lg">
           <CalendarPlus className="w-4 h-4 mr-2" />
           Criar Agenda
         </Button>
       </div>
 
-      <div className="space-y-2 mb-4 p-3 bg-secondary/20 rounded-lg border border-border/50">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Filtros</h3>
+      <div className="space-y-2 mb-4 p-3 bg-slate-950/45 rounded-xl border border-sky-400/15">
+        <h3 className="text-[11px] font-semibold text-cyan-300/80 uppercase tracking-wider mb-2">Filtros</h3>
         <div className="grid gap-2">
           <Input
             type="date"
@@ -190,9 +190,9 @@ export const ScheduleSelector = () => {
           <div
             key={schedule.id}
             onClick={() => setCurrentSchedule(schedule)}
-            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${currentSchedule?.id === schedule.id
-              ? 'bg-primary/20 border border-primary/50 glow-primary'
-              : 'bg-secondary/30 hover:bg-secondary/50 border border-transparent'
+            className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${currentSchedule?.id === schedule.id
+              ? 'bg-gradient-to-r from-cyan-500/25 to-blue-600/25 border border-cyan-400/60 shadow-[0_0_16px_rgba(6,182,212,0.22)]'
+              : 'bg-slate-950/40 hover:bg-slate-900/70 border border-sky-400/10 hover:border-sky-400/25'
               }`}
           >
             <div className="flex items-center gap-3">

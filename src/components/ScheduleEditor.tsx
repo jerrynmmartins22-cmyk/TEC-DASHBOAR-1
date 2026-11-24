@@ -70,7 +70,7 @@ export const ScheduleEditor = () => {
             <Plus className="w-4 h-4 mr-2" />
             Nova Caixa
           </Button>
-          <Button onClick={handleCopy} className="glow-primary">
+          <Button onClick={handleCopy} className="noc-cta rounded-lg">
             {copied ? (
               <Check className="w-4 h-4 mr-2" />
             ) : (

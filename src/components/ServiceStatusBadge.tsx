@@ -9,22 +9,22 @@ interface ServiceStatusBadgeProps {
 const statusConfig: Record<ServiceStatus, { label: string; className: string; icon: React.ReactNode }> = {
   pendente: {
     label: 'Pendente',
-    className: 'bg-muted text-muted-foreground',
+    className: 'bg-indigo-500/15 text-indigo-200 border-indigo-400/30',
     icon: <Minus className="w-3 h-3" />,
   },
   concluido: {
     label: 'Concluído',
-    className: 'bg-green-500/20 text-green-400 border-green-500/30',
+    className: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
     icon: <Check className="w-3 h-3" />,
   },
   cancelado: {
     label: 'Cancelado',
-    className: 'bg-destructive/20 text-destructive border-destructive/30',
+    className: 'bg-red-500/20 text-red-300 border-red-400/40',
     icon: <X className="w-3 h-3" />,
   },
   reagendado: {
     label: 'Reagendado',
-    className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    className: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
     icon: <Clock className="w-3 h-3" />,
   },
 };

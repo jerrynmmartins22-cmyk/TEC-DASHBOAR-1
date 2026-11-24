@@ -296,11 +296,13 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
             )}
           </div>
           {totalServices > 0 && (
-            <div className="w-full h-1 rounded-full bg-secondary/60 overflow-hidden mt-2">
+            <div className="w-full h-1.5 rounded-full bg-slate-950/80 overflow-hidden mt-2.5">
               <div
                 className={cn(
                   "h-full transition-all duration-300",
-                  isAllCompleted ? "bg-success" : "bg-primary"
+                  isAllCompleted
+                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
+                    : "bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_8px_rgba(34,211,238,0.45)]"
                 )}
                 style={{ width: `${boxProgressPct}%` }}
               />
@@ -323,26 +325,26 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
               draggable
               onDragStart={(e) => handleDragStart(e, service.id)}
               className={cn(
-                'p-3 rounded-lg space-y-2 cursor-move group transition-colors border',
+                'p-3 rounded-xl space-y-2 cursor-move group transition-all border',
                 isHighlighted
-                  ? 'animate-blink-blue border-blue-500'
-                  : 'bg-secondary/30 border-transparent hover:bg-secondary/50'
+                  ? 'animate-blink-blue border-cyan-400'
+                  : 'bg-[#081229]/85 border-sky-400/15 hover:border-cyan-400/35 hover:bg-[#0b1836]/90'
               )}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="font-mono text-sm font-medium text-foreground">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <GripVertical className="w-4 h-4 text-sky-300/40 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                  <span className="font-mono text-sm font-bold text-white tracking-tight">
                     {service.osNumber}
                   </span>
                   <ServiceBadge type={service.type} />
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleStatusChange(service.id, 'concluido')}
-                    className={`h-7 w-7 text-green-500 hover:bg-green-500/10 hover:text-green-600 ${service.status === 'concluido' ? 'bg-green-500/10 ring-1 ring-green-500/20' : 'opacity-70 hover:opacity-100'}`}
+                    className={`h-7 w-7 rounded-lg text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-300 ${service.status === 'concluido' ? 'bg-emerald-500/20 ring-1 ring-emerald-400/40' : 'opacity-75 hover:opacity-100'}`}
                     title="Concluído"
                   >
                     <Check className="w-4 h-4" />
@@ -351,7 +353,7 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                     variant="ghost"
                     size="icon"
                     onClick={() => handleStatusChange(service.id, 'cancelado')}
-                    className={`h-7 w-7 text-red-500 hover:bg-red-500/10 hover:text-red-600 ${service.status === 'cancelado' ? 'bg-red-500/10 ring-1 ring-red-500/20' : 'opacity-70 hover:opacity-100'}`}
+                    className={`h-7 w-7 rounded-lg text-red-400 hover:bg-red-500/15 hover:text-red-300 ${service.status === 'cancelado' ? 'bg-red-500/20 ring-1 ring-red-400/40' : 'opacity-75 hover:opacity-100'}`}
                     title="Cancelado"
                   >
                     <X className="w-4 h-4" />
@@ -360,7 +362,7 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                     variant="ghost"
                     size="icon"
                     onClick={() => handleStatusChange(service.id, 'reagendado')}
-                    className={`h-7 w-7 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-600 ${service.status === 'reagendado' ? 'bg-yellow-500/10 ring-1 ring-yellow-500/20' : 'opacity-70 hover:opacity-100'}`}
+                    className={`h-7 w-7 rounded-lg text-amber-400 hover:bg-amber-500/15 hover:text-amber-300 ${service.status === 'reagendado' ? 'bg-amber-500/20 ring-1 ring-amber-400/40' : 'opacity-75 hover:opacity-100'}`}
                     title="Reagendado"
                   >
                     <Clock className="w-4 h-4" />

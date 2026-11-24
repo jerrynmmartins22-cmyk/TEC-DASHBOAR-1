@@ -1,6 +1,6 @@
 import { useAppStore } from '@/lib/store';
 import { ViewModeBox } from './ViewModeBox';
-import { FileText, Copy, Check, Sun, Moon, Search, X } from 'lucide-react';
+import { FileText, Copy, Check, Sun, Moon, Search, X, CalendarDays } from 'lucide-react';
 
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -217,39 +217,44 @@ export const ScheduleViewer = () => {
       );
 
   const filterChips: { key: StatusFilter; label: string; count: number; activeClass: string }[] = [
-    { key: 'todas', label: 'Todas', count: stats.totalServices, activeClass: 'bg-primary text-primary-foreground border-primary' },
-    { key: 'pendente', label: 'Pendentes', count: stats.pendente, activeClass: 'bg-secondary text-foreground border-border' },
-    { key: 'concluido', label: 'Concluídas', count: stats.concluido, activeClass: 'bg-green-500/20 text-green-300 border-green-500/40' },
-    { key: 'reagendado', label: 'Reagendadas', count: stats.reagendado, activeClass: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40' },
-    { key: 'cancelado', label: 'Canceladas', count: stats.cancelado, activeClass: 'bg-destructive/20 text-destructive border-destructive/40' },
+    { key: 'todas', label: 'Todas', count: stats.totalServices, activeClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-semibold border-cyan-300/50 shadow-[0_0_12px_rgba(6,182,212,0.35)]' },
+    { key: 'pendente', label: 'Pendentes', count: stats.pendente, activeClass: 'bg-indigo-500/25 text-indigo-200 border-indigo-400/50' },
+    { key: 'concluido', label: 'Concluídas', count: stats.concluido, activeClass: 'bg-emerald-500/25 text-emerald-300 border-emerald-400/50' },
+    { key: 'reagendado', label: 'Reagendadas', count: stats.reagendado, activeClass: 'bg-amber-500/25 text-amber-300 border-amber-400/50' },
+    { key: 'cancelado', label: 'Canceladas', count: stats.cancelado, activeClass: 'bg-red-500/25 text-red-300 border-red-400/50' },
   ];
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border/50 bg-card/50">
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-foreground capitalize">
-            {dateFormatted}
-          </h2>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-sm text-muted-foreground">Turno:</span>
-            <div className="flex items-center gap-2 bg-secondary/30 p-1 rounded-lg border border-border/50">
-              <Sun className={`w-4 h-4 ${currentSchedule.shift === 'MANHÃ' ? 'text-accent' : 'text-muted-foreground'}`} />
-              <Switch
-                checked={currentSchedule.shift === 'TARDE'}
-                onCheckedChange={handleToggleShift}
-                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-accent"
-              />
-              <Moon className={`w-4 h-4 ${currentSchedule.shift === 'TARDE' ? 'text-primary' : 'text-muted-foreground'}`} />
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-sky-400/15 bg-[#081228]/70 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/25 text-cyan-300 shrink-0">
+            <CalendarDays className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-foreground capitalize">
+              {dateFormatted}
+            </h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-muted-foreground">Turno:</span>
+              <div className="flex items-center gap-2 bg-slate-950/60 p-1 rounded-lg border border-sky-400/20">
+                <Sun className={`w-4 h-4 ${currentSchedule.shift === 'MANHÃ' ? 'text-accent' : 'text-muted-foreground'}`} />
+                <Switch
+                  checked={currentSchedule.shift === 'TARDE'}
+                  onCheckedChange={handleToggleShift}
+                  className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-accent"
+                />
+                <Moon className={`w-4 h-4 ${currentSchedule.shift === 'TARDE' ? 'text-cyan-300' : 'text-muted-foreground'}`} />
+              </div>
+              <span className={`text-sm font-semibold ${currentSchedule.shift === 'MANHÃ' ? 'text-accent' : 'text-cyan-300'}`}>
+                {currentSchedule.shift}
+              </span>
             </div>
-            <span className={`text-sm font-medium ${currentSchedule.shift === 'MANHÃ' ? 'text-accent' : 'text-primary'}`}>
-              {currentSchedule.shift}
-            </span>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:flex-none sm:w-56 min-w-[160px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-300/70 pointer-events-none" />
             <Input
               ref={searchInputRef}
               type="text"
@@ -257,7 +262,7 @@ export const ScheduleViewer = () => {
               value={searchOS}
               onChange={(e) => setSearchOS(e.target.value)}
               placeholder="Buscar OS... (/)"
-              className="pl-8 pr-8 h-9 bg-secondary/40 border-border/50 font-mono text-sm"
+              className="pl-8 pr-8 h-9 bg-slate-950/60 border-sky-400/20 focus:border-cyan-400/60 font-mono text-sm"
             />
             {searchOS && (
               <button
@@ -269,7 +274,7 @@ export const ScheduleViewer = () => {
               </button>
             )}
           </div>
-          <Button onClick={handleCopyWithStatus} className="glow-primary shrink-0">
+          <Button onClick={handleCopyWithStatus} className="noc-cta rounded-lg shrink-0">
             {copied ? (
               <Check className="w-4 h-4 mr-2" />
             ) : (
@@ -281,7 +286,7 @@ export const ScheduleViewer = () => {
       </div>
 
       {/* KPI & Status Filter Bar */}
-      <div className="px-4 py-2.5 border-b border-border/40 bg-card/30 space-y-2">
+      <div className="px-4 py-2.5 border-b border-sky-400/15 bg-[#071022]/60 space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
             {filterChips.map((chip) => {
@@ -291,28 +296,28 @@ export const ScheduleViewer = () => {
                   key={chip.key}
                   onClick={() => setStatusFilter(chip.key)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all",
                     isActive
                       ? chip.activeClass
-                      : "bg-secondary/30 text-muted-foreground border-border/40 hover:bg-secondary/60 hover:text-foreground"
+                      : "bg-slate-950/50 text-sky-200/70 border-sky-400/15 hover:bg-sky-400/10 hover:text-white"
                   )}
                 >
                   <span>{chip.label}</span>
-                  <span className="font-mono text-[11px] opacity-80">{chip.count}</span>
+                  <span className="font-mono text-[11px] opacity-85">{chip.count}</span>
                 </button>
               );
             })}
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-sky-200/70">
             <span className="font-mono">{stats.totalBoxes} caixa(s)</span>
             <span>•</span>
-            <span className="font-mono font-medium text-foreground">{progressPct}% concluído</span>
+            <span className="font-mono font-semibold text-cyan-300">{progressPct}% concluído</span>
           </div>
         </div>
         {stats.totalServices > 0 && (
-          <div className="w-full h-1.5 rounded-full bg-secondary/60 overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-slate-950/80 border border-sky-400/10 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary to-success transition-all duration-500"
+              className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 transition-all duration-500 shadow-[0_0_12px_rgba(34,211,238,0.5)]"
               style={{ width: `${progressPct}%` }}
             />
           </div>
