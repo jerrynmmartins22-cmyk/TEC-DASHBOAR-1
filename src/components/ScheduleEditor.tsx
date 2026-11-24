@@ -38,19 +38,30 @@ export const ScheduleEditor = () => {
   };
 
   const dateFormatted = format(parseISO(currentSchedule.date), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+  const totalBoxes = currentSchedule.boxes.length;
+  const totalServices = currentSchedule.boxes.reduce((acc, box) => acc + box.services.length, 0);
+  const assignedTeams = currentSchedule.boxes.filter((box) => box.team && box.team.members.length > 0).length;
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b border-border/50 bg-card/50">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border/50 bg-card/50">
         <div>
-          <h2 className="text-lg font-bold text-foreground capitalize">
+          <h2 className="text-base sm:text-lg font-bold text-foreground capitalize">
             {dateFormatted}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Turno: <span className="text-primary font-medium">{currentSchedule.shift}</span>
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1 text-xs sm:text-sm text-muted-foreground">
+            <span>
+              Turno: <span className="text-primary font-medium">{currentSchedule.shift}</span>
+            </span>
+            <span className="text-border">•</span>
+            <span className="font-mono">{totalBoxes} caixa(s)</span>
+            <span className="text-border">•</span>
+            <span className="font-mono">{totalServices} O.S.</span>
+            <span className="text-border">•</span>
+            <span className="font-mono">{assignedTeams}/{totalBoxes} equipes</span>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
             onClick={() => addBox(currentSchedule.id)}
@@ -71,15 +82,26 @@ export const ScheduleEditor = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {currentSchedule.boxes.map((box) => (
-            <ServiceBoxCard 
-              key={box.id} 
-              box={box} 
-              scheduleId={currentSchedule.id} 
-            />
-          ))}
-        </div>
+        {currentSchedule.boxes.length === 0 ? (
+          <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center border border-dashed border-border/60 rounded-xl p-6 bg-card/20">
+            <FileText className="w-10 h-10 text-muted-foreground/40 mb-3" />
+            <p className="text-sm text-muted-foreground mb-3">Nenhuma caixa cadastrada nesta agenda.</p>
+            <Button variant="outline" size="sm" onClick={() => addBox(currentSchedule.id)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Adicionar primeira caixa
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {currentSchedule.boxes.map((box) => (
+              <ServiceBoxCard 
+                key={box.id} 
+                box={box} 
+                scheduleId={currentSchedule.id} 
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

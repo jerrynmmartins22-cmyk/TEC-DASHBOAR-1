@@ -137,53 +137,77 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
     setEditingDeparture(false);
   };
 
+  const totalServices = box.services.length;
+  const completedCount = box.services.filter((s) => s.status === 'concluido').length;
+  const isAllCompleted = totalServices > 0 && completedCount === totalServices;
+  const boxProgressPct = totalServices > 0 ? Math.round((completedCount / totalServices) * 100) : 0;
+
   return (
     <div
       className={cn(
         "glass-card p-4 animate-fade-in transition-all",
-        isDragOver ? 'ring-2 ring-primary bg-primary/10' : '',
+        isDragOver ? 'ring-2 ring-primary/60 border-dashed border-primary bg-primary/10' : '',
+        isAllCompleted && !box.alert ? 'border-success/40' : '',
         box.alert ? 'ring-2 ring-yellow-500/50 bg-yellow-500/5 stroke-yellow-500 animate-pulse-border' : ''
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/20">
-          <Box className="w-4 h-4 text-accent" />
+      <div className="flex items-start gap-2 mb-3">
+        <div className={cn(
+          "flex items-center justify-center w-8 h-8 rounded-lg shrink-0 mt-0.5",
+          isAllCompleted ? "bg-success/20" : "bg-accent/20"
+        )}>
+          <Box className={cn("w-4 h-4", isAllCompleted ? "text-success" : "text-accent")} />
         </div>
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-foreground">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-bold text-foreground leading-tight">
               {teamName ? `${teamName}: ` : ''}(CAIXA {String(box.number).padStart(2, '0')})
             </h3>
-            {box.alert && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-yellow-500 hover:text-yellow-600 animate-pulse"
-                  >
-                    <AlertTriangle className="w-4 h-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2 text-sm bg-yellow-950 border-yellow-500/30 text-yellow-100">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                    <span>{box.alert}</span>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
-            {box.city && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase">
-                <MapPin className="w-3 h-3" />
-                {box.city}
-              </div>
-            )}
+            <div className="flex items-center gap-1.5">
+              {totalServices > 0 && (
+                <span
+                  className={cn(
+                    "font-mono text-[11px] font-semibold px-1.5 py-0.5 rounded border",
+                    isAllCompleted
+                      ? "bg-success/15 text-success border-success/30"
+                      : "bg-secondary/50 text-muted-foreground border-border/50"
+                  )}
+                  title="O.S. concluídas nesta caixa"
+                >
+                  {completedCount}/{totalServices}
+                </span>
+              )}
+              {box.alert && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-yellow-500 hover:text-yellow-600 animate-pulse"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-2 text-sm bg-yellow-950 border-yellow-500/30 text-yellow-100">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                      <span>{box.alert}</span>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+              {box.city && (
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase">
+                  <MapPin className="w-3 h-3" />
+                  {box.city}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {editingDeparture ? (
               <div className="flex items-center gap-1">
                 <span className="text-[10px] text-accent font-bold">SAÍDA:</span>
@@ -191,7 +215,7 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                   type="time"
                   value={departureTime}
                   onChange={(e) => setDepartureTime(e.target.value)}
-                  className="h-6 w-24 text-xs bg-secondary/50 border-border/50"
+                  className="h-6 w-24 text-xs bg-secondary/50 border-border/50 font-mono"
                   autoFocus
                 />
                 <Button
@@ -217,7 +241,7 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                   setDepartureTime(box.departureTime || '');
                   setEditingDeparture(true);
                 }}
-                className="text-[10px] text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
+                className="font-mono text-[10px] text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
               >
                 SAÍDA: {box.departureTime || '-- : --'}
               </button>
@@ -228,13 +252,13 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
 
             {/* Return Time (GALPÃO) */}
             {editingReturn ? (
-              <div className="flex items-center gap-1 ml-2">
+              <div className="flex items-center gap-1">
                 <span className="text-[10px] text-accent font-bold">GALPÃO:</span>
                 <Input
                   type="time"
                   value={returnTime}
                   onChange={(e) => setReturnTime(e.target.value)}
-                  className="h-6 w-24 text-xs bg-secondary/50 border-border/50"
+                  className="h-6 w-24 text-xs bg-secondary/50 border-border/50 font-mono"
                   autoFocus
                 />
                 <Button
@@ -265,12 +289,23 @@ export const ViewModeBox = ({ box, scheduleId, highlightOS }: ViewModeBoxProps) 
                   setReturnTime(box.returnTime || '');
                   setEditingReturn(true);
                 }}
-                className="ml-2 text-[10px] text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
+                className="font-mono text-[10px] text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
               >
                 GALPÃO: {box.returnTime || '-- : --'}
               </button>
             )}
           </div>
+          {totalServices > 0 && (
+            <div className="w-full h-1 rounded-full bg-secondary/60 overflow-hidden mt-2">
+              <div
+                className={cn(
+                  "h-full transition-all duration-300",
+                  isAllCompleted ? "bg-success" : "bg-primary"
+                )}
+                style={{ width: `${boxProgressPct}%` }}
+              />
+            </div>
+          )}
         </div>
       </div>
 

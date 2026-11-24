@@ -112,7 +112,7 @@ export const ServiceBoxCard = ({ box, scheduleId }: ServiceBoxProps) => {
     <div
       className={cn(
         "glass-card p-4 animate-fade-in transition-all",
-        isDragOver ? 'ring-2 ring-primary bg-primary/10' : '',
+        isDragOver ? 'ring-2 ring-primary/60 border-dashed border-primary bg-primary/10' : '',
         box.alert ? 'ring-2 ring-yellow-500/50 bg-yellow-500/5 stroke-yellow-500 animate-pulse-border' : ''
       )}
       onDragOver={handleDragOver}
@@ -337,7 +337,8 @@ export const ServiceBoxCard = ({ box, scheduleId }: ServiceBoxProps) => {
               </div>
               <button
                 onClick={() => removeService(scheduleId, box.id, service.id)}
-                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                title="Remover O.S."
               >
                 <X className="w-4 h-4" />
               </button>
